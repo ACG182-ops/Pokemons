@@ -5,14 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.data.repository.CrudRepository;
 import org.springframework.stereotype.Component;
 
 import mx.uam.pokemones.Adopcion_pokemon.modelo.Pokemon;
 
 @Component
-public class PokemonRepository {
+
+public interface PokemonRepository extends CrudRepository <Pokemon,Integer>  {
 	//Base de datos
-		private Map<Integer,Pokemon> pokemonRepository=new HashMap<>();
+/**		private Map<Integer,Pokemon> pokemonRepository=new HashMap<>();
 //--------------------------------------------------------Crea--------------------------------------------------------------------------// 		
 		public Pokemon save(Pokemon nuevoPokemon) {
 			pokemonRepository.put(nuevoPokemon.getMatricula(), nuevoPokemon);
@@ -36,5 +38,5 @@ public class PokemonRepository {
 	public Pokemon Delete(Pokemon nuevoPokemon) {
 		pokemonRepository.remove(nuevoPokemon) ;
 	return null;	
-	}
+	}**/
 }

@@ -3,6 +3,7 @@ package mx.uam.pokemones.Adopcion_pokemon.servicios;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import javax.validation.Valid;
 
@@ -18,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import io.swagger.annotations.ApiOperation;
 
 import lombok.extern.slf4j.Slf4j;
 import mx.uam.pokemones.Adopcion_pokemon.modelo.Pokemon;
@@ -29,7 +31,14 @@ import mx.uam.pokemones.Adopcion_pokemon.negocio.PokemonService;
 public class PokemonController {
 	@Autowired
 	private PokemonService pokemonService;
+	
 //--------------------------------------------------------Crea--------------------------------------------------------------------------// 
+	@ApiOperation(
+			value="Crear Pokemon",
+			notes="Permite crear un nuevo pokemon,la matricula debe ser unica"
+			)
+	
+
 	@PostMapping(path="/pokemons", consumes=MediaType.APPLICATION_JSON_VALUE,produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> create(@RequestBody @Valid Pokemon nuevoPokemon) {
 		
@@ -44,18 +53,28 @@ public class PokemonController {
 
 	}
 //--------------------------------------------Regresa todos-----------------------------------------------------------------------------//
+	@ApiOperation(
+			value="Regresa todos los pokemon",
+			notes="Permite ver todos los pokemon en la BD"
+			)
+
 	@GetMapping(path="/pokemons",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> retrieveAll() {
-		List<Pokemon> result=pokemonService.retrieveAll();
+		Iterable<Pokemon> result=pokemonService.retrieveAll();
 		return ResponseEntity.status(HttpStatus.OK).body(result);
 	}
 	
-//---------------------------------------------------Regresa Uno------------------------------------------------------------------------//
+//---------------------------------------------------Regresa Uno------------------------------------------------------------------------//	
+	@ApiOperation(
+			value="Regresa un  pokemon",
+			notes="Permite ver a un pokemon mediante su matricula"
+			)
+
 	@GetMapping(path="/pokemons/{matricula}",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> retrieve(@PathVariable ("matricula")@Valid Integer matricula) {
 		log.info("Buscando al pokemon "+matricula);
 		
-		Pokemon pokemon=pokemonService.retrieve(matricula);	
+		Optional<Pokemon> pokemon=pokemonService.retrieve(matricula);	
 		if(pokemon !=null) {
 			return ResponseEntity.status(HttpStatus.OK).body(pokemon);//.body(pokemon);
 		}else{
@@ -64,6 +83,10 @@ public class PokemonController {
 		}
 	
 //---------------------------------------------------------Actualizar--------------------------------------------------------------------//
+	@ApiOperation(
+			value="Actualiza un  pokemon",
+			notes="Actualiza los datos de un pokemon mediante la matricula"
+			)
 	@PutMapping(path="/pokemons/{matricula}",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?>  update(@PathVariable ("matricula") @Valid Integer matricula, @RequestBody  @Valid Pokemon nuevoPokemon) {
 		Pokemon pokemon=pokemonService.Update(matricula,nuevoPokemon);
@@ -76,11 +99,15 @@ public class PokemonController {
 	
 	
 	//--------------------------------------------------------------Eliminar-----------------------------------------------------------------//
+	@ApiOperation(
+			value="Elimina un  pokemon",
+			notes="Elimina los datos de un pokemon mediante la matricula"
+			)
 	@DeleteMapping(path="/pokemons/{matricula}",produces=MediaType.APPLICATION_JSON_VALUE)
 	public ResponseEntity<?> delete(@PathVariable ("matricula")Integer matricula) {
 		
 		 if(matricula !=null) {
-			    Pokemon pokemon=pokemonService.Delete(matricula);
+			    Optional<Pokemon> pokemon=pokemonService.Delete(matricula);
 			    return ResponseEntity.status(HttpStatus.NO_CONTENT).body(pokemon);
 				    }else{
 				return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

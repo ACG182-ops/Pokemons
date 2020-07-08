@@ -1,6 +1,7 @@
 package mx.uam.pokemones.Adopcion_pokemon.negocio;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,35 +17,40 @@ public class PokemonService {
 	public Pokemon create(Pokemon nuevoPokemon) {
 		//Regla de negocio:No se puede crear mas de un pokemon con la misma matricula
 		
-		Pokemon pokemon=pokemonRepository.findByMatricula(nuevoPokemon.getMatricula());
-		if(pokemon ==null) {
-			
-			return pokemonRepository.save(nuevoPokemon);
+		Optional <Pokemon> pokemon=pokemonRepository.findById(nuevoPokemon.getMatricula());
+		if(!pokemon.isPresent()) {
+			Pokemon rtrPokemon=pokemonRepository.save(nuevoPokemon);
+			return rtrPokemon;
 		}else {
 			
 			return null;
 		}
 	}
 //--------------------------------------------Regresa todos-----------------------------------------------------------------------------//
-	public List<Pokemon> retrieveAll(){
-		return pokemonRepository.find();
+	public Iterable<Pokemon> retrieveAll(){
+		return pokemonRepository.findAll();
 	}
 //---------------------------------------------------Regresa Uno------------------------------------------------------------------------//
-	public Pokemon retrieve(Integer matricula){
-	return pokemonRepository.findByMatricula(matricula);
+	public Pokemon findByMatricula(Integer matricula){
+		Optional<Pokemon> pokemonOpt=pokemonRepository.findById(matricula);
+	return pokemonOpt.get();
 	}
 //---------------------------------------------------Actualiza Uno------------------------------------------------------------------------//
 	public Pokemon Update(Integer matricula,Pokemon nuevoPokemon){
-		Pokemon pokemon=pokemonRepository.findByMatricula(matricula);
-    	pokemon.setNombre(nuevoPokemon.getNombre());
-    	pokemon.setTipo(nuevoPokemon.getTipo());
-    return pokemonRepository.Update(matricula, pokemon);
-		
+		Optional<Pokemon> pokemon=pokemonRepository.findById(matricula);
+       if(pokemon.isPresent()==true) {
+			return pokemonRepository.save(nuevoPokemon);
+		}else {
+			
+			return null;
+		}
 	}
+
+
 //---------------------------------------------------Elimina uno------------------------------------------------------------------------//
 	public Pokemon Delete(Integer matricula){
-		Pokemon pokemon=pokemonRepository.findByMatricula(matricula);
-    return pokemonRepository.Delete(pokemon);
+		Optional<Pokemon> pokemonOpt=pokemonRepository.findById(matricula);
+    return pokemonRepository.deleteById(pokemon);
 		
 	}
 }
